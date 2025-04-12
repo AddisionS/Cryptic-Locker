@@ -1,2 +1,2 @@
 # Cryptic-Locker
-Cryptic Locker is a offline password manager 
+Cryptic Locker is an offline password manager 
