@@ -1,11 +1,11 @@
 from tkextrafont import Font
 
 _loaded = False
-_font_family = "Roboc"
-_font_path = "../assets/fonts/Roboc.otf"
+_font_family = "Orbitron"
+_font_path = "../assets/fonts/Orbitron-VariableFont_wght.ttf"
 _font_cache = {}
 
-def roboc(size):
+def orbitron(size):
     global _loaded
 
     if not _loaded:

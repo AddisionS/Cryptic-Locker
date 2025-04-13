@@ -13,7 +13,7 @@ class SignUp():
     @staticmethod
     def username_check( name):
         vault_path = "../vault"
-        username_file = f"{name}.acl"
+        username_file = f"{name}.acrl"
 
         if not os.path.exists(vault_path):
             os.makedirs(vault_path)
