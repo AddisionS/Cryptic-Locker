@@ -154,7 +154,7 @@ class SignUpScreen(ctk.CTk):
                 self.confirm_password_entry.configure(border_color="red", text_color="red", placeholder_text="Password and Confirm Password doesn't match", show="#")
 
             case "success":
-                print("Yes")
+                SignUp().create_acrl_file(username=self.username_entry.get(), password= self.password_entry.get())
 
     def submit_check(self):
         username = self.username_entry.get().strip()

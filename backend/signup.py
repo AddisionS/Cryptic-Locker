@@ -1,6 +1,6 @@
 import os
 import base64
-
+import struct
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
@@ -13,7 +13,7 @@ class SignUp():
     @staticmethod
     def username_check( name):
         vault_path = "../vault"
-        username_file = f"{name}.acrl"
+        username_file = f"{name}.acl"
 
         if not os.path.exists(vault_path):
             os.makedirs(vault_path)
@@ -49,4 +49,29 @@ class SignUp():
         tag = encryptor.tag
         encrypted_data = iv + cipher_text + tag
         return base64.b64encode(encrypted_data).decode('utf-8')
+
+    def create_acrl_file(self, username, password):
+        vault_path = "../vault"
+        if not os.path.exists(vault_path):
+            os.makedirs(vault_path)
+        magic_header = b'ITSACRLFILEBITCH'
+        username_bytes = username.encode('utf-8')
+
+        key, salt = self.derive_key(password= password)
+        password_bytes = self.encrypt_password(password= password, key=key).encode('utf-8')
+
+        file_path = os.path.join(vault_path, f"{username}.acrl")
+
+        file_content = bytearray()
+        file_content.extend(magic_header)
+        file_content.extend(salt)
+        file_content.extend(struct.pack("H", len(username_bytes)))
+        file_content.extend(username_bytes)
+        file_content.extend(struct.pack("H", len(password_bytes)))
+        file_content.extend(password_bytes)
+
+        encrypted_file_content = base64.b64encode(file_content)
+
+        with open(file_path, "wb") as file:
+            file.write(encrypted_file_content)
 
