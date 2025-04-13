@@ -2,7 +2,7 @@ import customtkinter as ctk
 from utils import roboc
 import tkinter as tk
 import re
-from backend import signup
+from backend.signup import SignUp
 
 USERNAME_PATTERN = r"^[A-Za-z0-9_]{4,20}$"
 PASSWORD_PATTERN = r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%?&]{6,}$"
@@ -160,8 +160,9 @@ class SignUpScreen(ctk.CTk):
         username = self.username_entry.get().strip()
         password = self.password_entry.get()
         confirm_password = self.confirm_password_entry.get()
+        signup = SignUp()
 
-        if not signup.SignUp.username_check(username):
+        if not signup.username_check(name=username):
             return  "username_exists"
 
         if not self.entry_length(self.username_entry):
