@@ -1,18 +1,19 @@
 import customtkinter as ctk
 from utils import orbitron
-import tkinter as tk
 import re
 from backend.signup import SignUp
+from gui.TOTP_gui import TOTPScreen
+import tkinter as tk
 
 USERNAME_PATTERN = r"^[A-Za-z0-9_]{4,20}$"
 PASSWORD_PATTERN = r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%?&]{6,}$"
 
-class SignUpScreen(ctk.CTk):
+class SignUpScreen(ctk.CTkToplevel):
     def __init__(self):
         super().__init__()
 
         # Window setup
-        self.iconbitmap("../assets/images/logo.ico")
+        self.after(201,lambda: self.iconbitmap("../assets/images/logo.ico"))
         self.state('zoomed')
         self.title("Cryptic Locker - Sign Up")
         self.minsize(900, 800)
@@ -65,7 +66,7 @@ class SignUpScreen(ctk.CTk):
             border_width=2,
             text_color="white",
             placeholder_text="Enter your password",
-            show="#"
+            show="*"
         )
         self.password_entry.pack(pady=(0, 20), anchor='w', padx=(85, 0))
 
@@ -83,7 +84,7 @@ class SignUpScreen(ctk.CTk):
             border_width=2,
             text_color="white",
             placeholder_text="Re-enter your password",
-            show="#"
+            show="*"
         )
         self.confirm_password_entry.pack(pady=(0, 20), anchor='w', padx=(85,0))
 
@@ -102,8 +103,9 @@ class SignUpScreen(ctk.CTk):
             command=self.submit
         )
         self.sign_up_button.pack(pady=(20, 10))
+        self.bind("<Return>", self.submit)
 
-    def submit(self):
+    def submit(self, event=None):
         self.username_entry.configure(border_color="#6C90C3", text_color="white")
         self.password_entry.configure(border_color="#6C90C3", text_color="white")
         self.confirm_password_entry.configure(border_color="#6C90C3", text_color="white")
@@ -113,48 +115,53 @@ class SignUpScreen(ctk.CTk):
         match error:
             case "long_username":
                 self.content_frame.focus_set()
-                self.username_entry.delete(0, tk.END)
-                self.username_entry.configure(border_color="red", text_color="red", placeholder_text="Username cannot exceed 15 characters")
+                self.username_entry.delete(0, ctk.END)
+                self.username_entry.configure(border_color="red", placeholder_text_color="red", placeholder_text="Username cannot exceed 15 characters")
 
             case "username_exists":
                 self.content_frame.focus_set()
-                self.username_entry.delete(0, tk.END)
-                self.username_entry.configure(border_color="red", text_color="red", placeholder_text="Username already in use")
+                self.username_entry.delete(0, ctk.END)
+                self.username_entry.configure(border_color="red", placeholder_text_color="red", placeholder_text="Username already in use")
 
             case "username_regex_fail":
                 self.content_frame.focus_set()
-                self.username_entry.delete(0, tk.END)
-                self.username_entry.configure(border_color="red", text_color="red", placeholder_text="A-Z, a-z, 0-9, _ and at least 4 chars")
+                self.username_entry.delete(0, ctk.END)
+                self.username_entry.configure(border_color="red", placeholder_text_color="red", placeholder_text="A-Z,a-z,0-9,_ and at least 4 chars")
 
             case "long_password":
                 self.content_frame.focus_set()
-                self.password_entry.delete(0, tk.END)
-                self.password_entry.configure(border_color="red", text_color="red", placeholder_text="Password cannot exceed 15 characters")
+                self.password_entry.delete(0, ctk.END)
+                self.password_entry.configure(border_color="red", placeholder_text_color="red", placeholder_text="Password cannot exceed 15 characters")
 
             case "password_regex_fail":
                 self.content_frame.focus_set()
-                self.password_entry.delete(0, tk.END)
-                self.password_entry.configure(border_color="red", text_color="red", placeholder_text="A-Z, a-z, 0-9, @, $, !, %, ?, & and at least 6 chars", show="#")
+                self.password_entry.delete(0, ctk.END)
+                self.password_entry.configure(border_color="red", placeholder_text_color="red", placeholder_text="A-Z,a-z,0-9,@,$,!,%,?,& and at least 6 chars", show="*")
 
             case "long_confirm_password":
                 self.content_frame.focus_set()
-                self.confirm_password_entry.delete(0, tk.END)
-                self.confirm_password_entry.configure(border_color="red", text_color="red", placeholder_text="Password cannot exceed 15 characters")
+                self.confirm_password_entry.delete(0, ctk.END)
+                self.confirm_password_entry.configure(border_color="red", placeholder_text_color="red", placeholder_text="Password cannot exceed 15 characters")
 
             case "confirm_password_regex_fail":
                 self.content_frame.focus_set()
-                self.confirm_password_entry.delete(0, tk.END)
-                self.confirm_password_entry.configure(border_color="red", text_color="red", placeholder_text="A-Z, a-z, 0-9, @, $, !, %, ?, & and at least 6 chars", show="#")
+                self.confirm_password_entry.delete(0, ctk.END)
+                self.confirm_password_entry.configure(border_color="red", placeholder_text_color="red", placeholder_text="A-Z,a-z,0-9,@,$,!,%,?,& and at least 6 chars", show="*")
 
             case "mismatch_password":
                 self.content_frame.focus_set()
-                self.password_entry.delete(0, tk.END)
-                self.confirm_password_entry.delete(0, tk.END)
-                self.password_entry.configure(border_color="red", text_color="red", placeholder_text="Password and Confirm Password doesn't match", show="#")
-                self.confirm_password_entry.configure(border_color="red", text_color="red", placeholder_text="Password and Confirm Password doesn't match", show="#")
+                self.password_entry.delete(0, ctk.END)
+                self.confirm_password_entry.delete(0, ctk.END)
+                self.password_entry.configure(border_color="red", placeholder_text_color="red", placeholder_text="Password and Confirm Password doesn't match", show="*")
+                self.confirm_password_entry.configure(border_color="red", placeholder_text_color="red", placeholder_text="Password and Confirm Password doesn't match", show="*")
 
             case "success":
+                self.unbind("<Return>")
                 SignUp().create_acrl_file(username=self.username_entry.get(), password= self.password_entry.get())
+                TOTPScreen(username=self.username_entry.get())
+                self.after(100, self.destroy())
+
+
 
     def submit_check(self):
         username = self.username_entry.get().strip()
@@ -193,5 +200,7 @@ class SignUpScreen(ctk.CTk):
 
 
 if __name__ == "__main__":
+    root = tk.Tk()
+    root.withdraw()
     app = SignUpScreen()
     app.mainloop()

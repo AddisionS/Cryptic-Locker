@@ -20,6 +20,10 @@ class TOTPHandler:
 
         return byte_stream.getvalue(), secret
 
-    def verify_otp(self, otp):
-        totp = pyotp.TOTP(self.secret)
-        return totp.verify(otp)
+
+    def verify_otp(self, otp, secret):
+        totp = pyotp.TOTP(secret)
+        return totp.verify(otp, valid_window=1)
+
+    def save_secret(self, secret):
+        print(secret)
