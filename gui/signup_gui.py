@@ -12,7 +12,6 @@ class SignUpScreen(ctk.CTkToplevel):
     def __init__(self):
         super().__init__()
 
-        # Window setup
         self.after(201,lambda: self.iconbitmap("../assets/images/logo.ico"))
         self.state('zoomed')
         self.title("Cryptic Locker - Sign Up")
@@ -159,7 +158,7 @@ class SignUpScreen(ctk.CTkToplevel):
                 self.unbind("<Return>")
                 SignUp().create_acrl_file(username=self.username_entry.get(), password= self.password_entry.get())
                 TOTPScreen(username=self.username_entry.get())
-                self.after(100, self.destroy())
+                self.after(1, self.destroy)
 
 
 

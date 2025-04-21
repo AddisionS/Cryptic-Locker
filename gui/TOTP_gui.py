@@ -1,5 +1,4 @@
 import customtkinter as ctk
-# import tkinter as tk
 from utils import orbitron
 from backend.TOTP import TOTPHandler
 from PIL import Image
@@ -99,7 +98,13 @@ class TOTPScreen(ctk.CTkToplevel):
     def verify_otp(self):
         otp = self.otp_entry.get().strip()
         if TOTPHandler().verify_otp(otp, self.secret):
-            print("yes")
+            TOTPHandler().save_secret(username=self.username, secret=self.secret)
+            self.after(1, self.otp_entry.destroy)
+            self.after(1, self.action_button.destroy)
+            self.content_frame.configure(height=300)
+            self.text_label.configure(text="Successfully Verified")
+            self.text_label.place(relx=0.5, rely = 0.6)
+
         else:
             self.content_frame.focus_set()
             self.otp_entry.delete(0, ctk.END)
