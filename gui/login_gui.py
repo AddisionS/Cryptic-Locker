@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from utils import orbitron
 import tkinter as tk
+from backend.login import Login
 
 class LoginScreen(ctk.CTkToplevel):
     def __init__(self):
@@ -72,9 +73,31 @@ class LoginScreen(ctk.CTkToplevel):
             border_width=2,
             text_color="white",
             text="Login",
-
+            command= self.submit
         )
         self.login_button.pack(pady=(20, 10))
+
+    def submit(self):
+        username = self.username_entry.get().strip()
+        password = self.password_entry.get()
+        login = Login()
+
+        if not login.username_check(username):
+            self.content_frame.focus_set()
+            self.username_entry.delete(0, ctk.END)
+            self.username_entry.configure(border_color="red", placeholder_text_color="red", placeholder_text="No such user exists")
+            return
+
+        login.parse_data(username=username)
+        if not login.match_password(user_password=password):
+            self.content_frame.focus_set()
+            self.password_entry.delete(0, ctk.END)
+            self.password_entry.configure(border_color="red", placeholder_text_color="red",placeholder_text="Invalid Password")
+            return
+
+        else:
+            print("correct password")
+
 
 if __name__ == "__main__":
     root = tk.Tk()

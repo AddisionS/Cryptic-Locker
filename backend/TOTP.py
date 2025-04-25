@@ -74,4 +74,4 @@ class TOTPHandler:
         cipher_text = encryptor.update(secret) + encryptor.finalize()
         tag = encryptor.tag
         encrypted_data = iv + cipher_text + tag
-        return base64.b64encode(encrypted_data).decode('utf-8')
+        return encrypted_data
