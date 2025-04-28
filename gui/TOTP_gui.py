@@ -77,6 +77,11 @@ class TOTPScreen(ctk.CTkToplevel):
         self.content_frame.configure(height=400)
         self.qr_label.destroy()
 
+        def only_numbers(text):
+            return text.isdigit() or text == ""
+
+        vcmd = (self.register(only_numbers), "%P")
+
         self.otp_entry = ctk.CTkEntry(
             self.content_frame,
             font=orbitron.orbitron(30),
@@ -87,6 +92,8 @@ class TOTPScreen(ctk.CTkToplevel):
             border_width=2,
             text_color="white",
             placeholder_text="Enter OTP",
+            validate="key",
+            validatecommand=vcmd
         )
         self.otp_entry.place(relx=0.5, rely=0.45, anchor="center")
 

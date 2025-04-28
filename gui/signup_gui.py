@@ -9,8 +9,9 @@ USERNAME_PATTERN = r"^[A-Za-z0-9_]{4,20}$"
 PASSWORD_PATTERN = r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%?&]{6,}$"
 
 class SignUpScreen(ctk.CTkToplevel):
-    def __init__(self):
+    def __init__(self, parent):
         super().__init__()
+        self.parent = parent
 
         self.after(201,lambda: self.iconbitmap("../assets/images/logo.ico"))
         self.state('zoomed')
@@ -20,6 +21,22 @@ class SignUpScreen(ctk.CTkToplevel):
 
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("dark-blue")
+        self.bind("<Escape>", self.go_back)
+
+        self.back_button = ctk.CTkButton(
+            self,
+            text="←",
+            font=orbitron.orbitron(30),
+            width=50,
+            height=40,
+            fg_color="#171F55",
+            hover_color="#1D2763",
+            text_color="#6C90C3",
+            corner_radius=20,
+            command=self.go_back,
+            border_width=0
+        )
+        self.back_button.place(x=20, y=20)
 
         # Content Frame
         self.content_frame = ctk.CTkFrame(self, fg_color="#171F55", corner_radius=20)
@@ -156,11 +173,10 @@ class SignUpScreen(ctk.CTkToplevel):
 
             case "success":
                 self.unbind("<Return>")
-                SignUp().create_acrl_file(username=self.username_entry.get(), password= self.password_entry.get())
+                self.unbind("<Escape>")
+                SignUp().create_acrl_file(username=self.username_entry.get(), password=self.password_entry.get())
                 TOTPScreen(username=self.username_entry.get())
                 self.after(1, self.destroy)
-
-
 
     def submit_check(self):
         username = self.username_entry.get().strip()
@@ -169,7 +185,7 @@ class SignUpScreen(ctk.CTkToplevel):
         signup = SignUp()
 
         if not signup.username_check(name=username):
-            return  "username_exists"
+            return "username_exists"
 
         if not self.entry_length(self.username_entry):
             return "long_username"
@@ -197,9 +213,14 @@ class SignUpScreen(ctk.CTkToplevel):
     def entry_length(self, field):
         return len(field.get()) <= 15
 
+    def go_back(self, event=None):
+        self.parent.deiconify()
+        self.parent.state('zoomed')
+        self.destroy()
+
 
 if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()
-    app = SignUpScreen()
+    app = SignUpScreen(parent=root)
     app.mainloop()

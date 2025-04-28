@@ -25,8 +25,7 @@ class Login():
         with open(file_path, "rb") as file:
             data = base64.b64decode(file.read())
 
-        index = 16  # Skip magic header
-
+        index = 16
         self.password_salt = data[index:index + 32]
         index += 32
 
@@ -51,7 +50,6 @@ class Login():
         try:
             key = self.derive_key(user_password, self.password_salt)
 
-            # Split encrypted_password into iv (16), ciphertext (n), tag (16)
             iv = self.encrypted_password[:16]
             tag = self.encrypted_password[-16:]
             ciphertext = self.encrypted_password[16:-16]
@@ -60,7 +58,6 @@ class Login():
             decryptor = cipher.decryptor()
             decrypted = decryptor.update(ciphertext) + decryptor.finalize()
 
-            # If we reach here, the password is correct
             return decrypted.decode('utf-8') == user_password
         except Exception:
             return False
